@@ -74,7 +74,7 @@ function loadFeed(id, cb) {
             });
         }
 
-        if (cb) {
+        if ( cb ) {
             cb();
         }
     });
