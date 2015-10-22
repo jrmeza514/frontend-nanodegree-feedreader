@@ -22,7 +22,7 @@ $(function() {
          */
         it('are defined', function() {
             expect(allFeeds).toBeDefined();
-            expect(allFeeds.length).not.toBe(0);
+            expect(allFeeds.length).toBeGreaterThan(0);
         });
 
 
@@ -36,6 +36,9 @@ $(function() {
                 var feed = allFeeds[i];
                 // ensure the url is defined
                 expect(feed.url).toBeDefined();
+                //check that it is not an empty url
+                //make sure url is not just spaces
+                expect(feed.url.replace(" ", "")).not.toEqual("");
             }
         });
 
@@ -49,6 +52,8 @@ $(function() {
                 var feed = allFeeds[i];
                 // ensure name is defined
                 expect(feed.name).toBeDefined();
+                //Make sure name is not empty string or spaces
+                expect(feed.name.replace(" ", "")).not.toEqual("");
             }
         });
     });
@@ -72,7 +77,7 @@ $(function() {
          */
         it("should become visible when menu button is clicked", function() {
             // select menu link
-            var menuLink = document.getElementsByClassName("menu-icon-link")[0];
+            var menuLink = $(".menu-icon-link")[0];
             // simulate click event
             menuLink.click();
             // See check if menu is visible
@@ -104,9 +109,9 @@ $(function() {
         // when load feed is done
         it("should load feed", function(done) {
             // find the list of entries in the feed
-            var entries = document.getElementsByClassName("entry");
+            var entries = $(".entry");
             // check if feed has at least 1 entry
-            expect(entries.length).not.toBe(0);
+            expect(entries.length).toBeGreaterThan(0);
             // finish
             done();
         });
@@ -118,30 +123,25 @@ $(function() {
              * by the loadFeed function that the content actually changes.
              * Remember, loadFeed() is asynchronous.
              */
-        // small utility for selecting random feed
-        var randomFeedIndex = 0;
-        // returns a randomly selected integer
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min)) + min;
-        }
-
+        var firstFeeedHTML;
         beforeEach(function(done) {
-            // select a random index
-            randomFeedIndex = getRandomInt(0, allFeeds.length);
-            // load the random feed
-            loadFeed(randomFeedIndex, function() {
-                // invoke callback
-                done();
+            // load the first feed
+            loadFeed(0, function() {
+                firstFeeedHTML = $(".feed")[0].innerHTML;
+                loadFeed(1, done);
             });
         });
         it("Should load New Feed", function(done) {
-            var headerTitle = document.getElementsByClassName("header-title")[0];
+            var headerTitle = $(".header-title")[0];
             // ensure the title updates appropriately
-            expect(headerTitle.innerHTML).toBe(allFeeds[randomFeedIndex].name);
+            expect($(headerTitle).html()).toBe(allFeeds[1].name);
+            //Ensure that the inner html has updates
+            var currentFeedHTML = $(".feed")[0].innerHTML;
+            expect(firstFeeedHTML).not.toEqual(currentFeedHTML);
+            // load default
+            loadFeed(0);
             // call done
             done();
-            // load default feed again
-            loadFeed(0, null);
         });
     });
 }());
